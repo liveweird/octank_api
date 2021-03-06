@@ -14,6 +14,10 @@ pip install -r requirements.txt
 
 docker run --name pg_octank_api -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres:alpine
 
+# How to run migrations? (DB has to be created already!)
+
+alembic upgrade head
+
 # How to run API?
 
 export FLASK_APP=octank_api
