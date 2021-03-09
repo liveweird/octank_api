@@ -23,3 +23,8 @@ alembic upgrade head
 
 export FLASK_APP=octank_api
 python -m flask run
+
+# How to build a Docker image?
+
+docker build -t octank_api .
+docker tag octank_api:latest {ECR registry}/octank_api:latest

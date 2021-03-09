@@ -2,9 +2,10 @@ import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from os import environ
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OCTANK_AURORA_ENDPOINT') # 'postgresql://postgres:postgres@localhost/octank_aurora_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('OCTANK_AURORA_ENDPOINT') # 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
