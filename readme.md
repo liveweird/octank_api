@@ -1,6 +1,7 @@
 # How to create a virtual env?
 
-pyenv virtualenv octank_api
+pyenv install 3.9.1
+pyenv virtualenv 3.9.1 octank_api
 
 # How to dump dependencies?
 

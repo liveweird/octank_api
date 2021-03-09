@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/pg_octank_api'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('OCTANK_AURORA_ENDPOINT') # 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
@@ -74,4 +74,4 @@ def watching_heartbeat():
     }), 201
   
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug = True, port = 80)
