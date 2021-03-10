@@ -9,7 +9,12 @@ from os import environ
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option('sqlalchemy.url', environ['OCTANK_AURORA_ENDPOINT'])
+endpoint = environ.get('OCTANK_AURORA_ENDPOINT')
+dbname = environ.get('OCTANK_AURORA_DBNAME')
+username = 'postgres'
+password = environ.get('OCTANK_AURORA_PASSWORD')
+connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
+config.set_main_option('sqlalchemy.url', connection)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

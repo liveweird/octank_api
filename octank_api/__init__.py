@@ -5,7 +5,13 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('OCTANK_AURORA_ENDPOINT') # 'postgresql://postgres:postgres@localhost/octank_aurora_db'
+
+endpoint = environ.get('OCTANK_AURORA_ENDPOINT')
+dbname = environ.get('OCTANK_AURORA_DBNAME')
+username = 'postgres'
+password = environ.get('OCTANK_AURORA_PASSWORD')
+connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
+app.config['SQLALCHEMY_DATABASE_URI'] = connection # 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
