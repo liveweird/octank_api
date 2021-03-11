@@ -26,12 +26,22 @@ python -m flask run
 
 # How to build a Docker image?
 
+docker login -u AWS -p $(aws ecr get-login-password --region eu-central-1) {ECR registry}
+
 docker build -t octank_api .
 docker tag octank_api:latest {ECR registry}/octank_api:latest
-docker login -u AWS -p $(aws ecr get-login-password --region eu-central-1) {ECR registry}
 
 aws ecr create-repository \
     --repository-name octank_api \
     --image-scanning-configuration scanOnPush=false \
     --region eu-central-1
 docker push {ECR registry}/octank_api:latest
+
+docker build -t octank_task -f Dockerfile.task .
+docker tag octank_task:latest {ECR registry}/octank_task:latest
+
+aws ecr create-repository \
+    --repository-name octank_task \
+    --image-scanning-configuration scanOnPush=false \
+    --region eu-central-1
+docker push {ECR registry}/octank_task:latest
