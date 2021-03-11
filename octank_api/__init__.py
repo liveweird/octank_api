@@ -16,6 +16,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = connection # 'postgresql://postgres:post
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
+
+# health check
+@app.route('/', methods=['GET'])
+def health_check():
+    return jsonify({}), 200
+
+
 class user(db.Model):
     user = db.Column(db.String(64), primary_key=True)
     gender = db.Column(db.Integer, nullable=False)
@@ -73,12 +80,14 @@ def read_shows():
         'shows': [show.serialize() for show in show.query.all()]
     }), 200
 
+
 @app.route('/api/watching', methods=['POST'])
 def watching_heartbeat():
     user = request.args.get('user', type = str)
     show = request.args.get('show', type = str)
     return jsonify({
     }), 201
+
   
 if __name__ == '__main__':
-    app.run(debug = True, port = 80)
+    app.run(debug = True, host='0.0.0.0', port = 80)
