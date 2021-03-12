@@ -87,15 +87,19 @@ def read_shows():
 
 @app.route('/api/watching', methods=['POST'])
 def watching_heartbeat():
-    user = request.args.get('user', type = str)
-    show = request.args.get('show', type = str)
-    session = request.args.get('session', type = str)
+    user_param = request.args.get('user', type = str)
+    show_param = request.args.get('show', type = str)
+    session_param = request.args.get('session', type = str)
+
+    print('User: {}'.format(user_param))
+    print('Show: {}'.format(show_param))
+    print('Session: {}'.format(session_param))
 
     # build event
     stream_event = {
-        'user': user,
-        'show': show,
-        'session': session,
+        'user': user_param,
+        'show': show_param,
+        'session': session_param,
         'timestamp': datetime.now().isoformat()
     }
 
@@ -103,7 +107,7 @@ def watching_heartbeat():
     response = kinesis.put_record(
         StreamName = "OctankKinesisDataStream",
         Data = json.dumps(stream_event),
-        PartitionKey = session
+        PartitionKey = session_param
     )
 
     # analyze response
