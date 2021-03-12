@@ -1,5 +1,6 @@
 import json
 import boto3
+import logging
 
 from datetime import datetime
 from flask import Flask, request, jsonify
@@ -91,9 +92,9 @@ def watching_heartbeat():
     show_param = request.args.get('show', type = str)
     session_param = request.args.get('session', type = str)
 
-    print('User: {}'.format(user_param))
-    print('Show: {}'.format(show_param))
-    print('Session: {}'.format(session_param))
+    app.logger.info('User: {}'.format(user_param))
+    app.logger.info('Show: {}'.format(show_param))
+    app.logger.info('Session: {}'.format(session_param))
 
     # build event
     stream_event = {
