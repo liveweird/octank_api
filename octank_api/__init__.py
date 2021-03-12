@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = connection # 'postgresql://postgres:post
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
-kinesis = boto3.resource("kinesis")
+kinesis = boto3.client("kinesis")
 
 # health check
 @app.route('/', methods=['GET'])
