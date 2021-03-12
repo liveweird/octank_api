@@ -1,4 +1,7 @@
 import json
+import boto3
+
+from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -16,6 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = connection # 'postgresql://postgres:post
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
+kinesis = boto3.resource("kinesis")
 
 # health check
 @app.route('/', methods=['GET'])
@@ -85,7 +89,28 @@ def read_shows():
 def watching_heartbeat():
     user = request.args.get('user', type = str)
     show = request.args.get('show', type = str)
+    session = request.args.get('session', type = str)
+
+    # build event
+    stream_event = {
+        'user': user,
+        'show': show,
+        'session': session,
+        'timestamp': datetime.now().isoformat()
+    }
+
+    # send event
+    response = kinesis.put_record(
+        StreamName = "OctankKinesisDataStream",
+        Data = json.dumps(stream_event),
+        PartitionKey = session
+    )
+
+    # analyze response
+    ordinal = json.loads(response)["SequenceNumber"]
+
     return jsonify({
+        'seq': ordinal
     }), 201
 
   
