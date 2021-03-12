@@ -90,11 +90,7 @@ def read_shows():
 def watching_heartbeat():
     user_param = request.args.get('user', type = str)
     show_param = request.args.get('show', type = str)
-    session_param = request.args.get('session', default = "session1", type = str)
-
-    app.logger.warning("User: {}".format(user_param))
-    app.logger.warning("Show: {}".format(show_param))
-    app.logger.warning("Session: {}".format(session_param))
+    session_param = request.args.get('session', type = str)
 
     # build event
     stream_event = {
