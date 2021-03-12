@@ -88,13 +88,13 @@ def read_shows():
 
 @app.route('/api/watching', methods=['POST'])
 def watching_heartbeat():
-    user_param = request.args.get('user', type = str)
-    show_param = request.args.get('show', type = str)
-    session_param = request.args.get('session', type = str)
+    user_param = request.args.get('user', default = "user", type = str)
+    show_param = request.args.get('show', default = "show", type = str)
+    session_param = request.args.get('session', default = "session", type = str)
 
-    app.logger.info('User: {}'.format(user_param))
-    app.logger.info('Show: {}'.format(show_param))
-    app.logger.info('Session: {}'.format(session_param))
+    app.logger.warning("User: {}".format(user_param))
+    app.logger.debug("Show: {}".format(show_param))
+    app.logger.info("Session: {}".format(session_param))
 
     # build event
     stream_event = {
