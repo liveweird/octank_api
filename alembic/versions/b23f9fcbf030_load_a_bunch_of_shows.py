@@ -27,14 +27,14 @@ def upgrade():
     op.bulk_insert(
         show,
         [
-            {'show': 'Avatar', 'origin': 'Austria', 'genre': 1, 'pgrating': '1'},
-            {'show': 'Breaking Bad', 'origin': 'Brasil', 'genre': 2, 'pgrating': '2'},
-            {'show': 'Chernobyl', 'origin': 'Chile', 'genre': 3, 'pgrating': '3'},
-            {'show': 'Dracula', 'origin': 'Denmark', 'genre': 1, 'pgrating': '4'},
-            {'show': 'Exorcist', 'origin': 'Austria', 'genre': 1, 'pgrating': '5'},
-            {'show': 'Family Guy', 'origin': 'Brasil', 'genre': 2, 'pgrating': '1'},
-            {'show': 'Goonies', 'origin': 'Chile', 'genre': 2, 'pgrating': '1'},
-            {'show': 'Home Alone', 'origin': 'Denmark', 'genre': 1, 'pgrating': '2'}
+            {'show': 'Avatar-AU-1-1', 'origin': 'Austria', 'genre': 1, 'pgrating': '1'},
+            {'show': 'Breaking Bad-BR-2-2', 'origin': 'Brasil', 'genre': 2, 'pgrating': '2'},
+            {'show': 'Chernobyl-CH-3-3', 'origin': 'Chile', 'genre': 3, 'pgrating': '3'},
+            {'show': 'Dracula-DE-1-4', 'origin': 'Denmark', 'genre': 1, 'pgrating': '4'},
+            {'show': 'Exorcist-AU-1-5', 'origin': 'Austria', 'genre': 1, 'pgrating': '5'},
+            {'show': 'Family Guy-BR-2-1', 'origin': 'Brasil', 'genre': 2, 'pgrating': '1'},
+            {'show': 'Goonies-CH-2-1', 'origin': 'Chile', 'genre': 2, 'pgrating': '1'},
+            {'show': 'Home Alone-DE-1-2', 'origin': 'Denmark', 'genre': 1, 'pgrating': '2'}
         ]
     )
 
