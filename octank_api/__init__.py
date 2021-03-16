@@ -90,21 +90,21 @@ def read_shows():
 def watching_heartbeat():
     user_param = request.args.get('user', type = str)
     show_param = request.args.get('show', type = str)
-    session_param = request.args.get('session', type = str)
+    device_param = request.args.get('device', type = str)
 
     # build event
     stream_event = {
         'user': user_param,
         'show': show_param,
-        'session': session_param,
-        'timestamp': datetime.now().isoformat()
+        'device': device_param
+        # 'timestamp': datetime.now().isoformat()
     }
 
     # send event
     response = kinesis.put_record(
         StreamName = "OctankKinesisDataStream",
         Data = json.dumps(stream_event),
-        PartitionKey = session_param
+        PartitionKey = device_param
     )
 
     # analyze response
