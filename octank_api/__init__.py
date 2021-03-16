@@ -94,10 +94,10 @@ def watching_heartbeat():
 
     # build event
     stream_event = {
-        'user': user_param,
-        'show': show_param,
-        'device': device_param
-        # 'timestamp': datetime.now().isoformat()
+        'userid': user_param,
+        'showid': show_param,
+        'deviceid': device_param
+        # 'tstamp': datetime.now().isoformat()
     }
 
     # send event
