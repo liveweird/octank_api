@@ -102,7 +102,7 @@ def watching_heartbeat():
 
     # send event
     response = kinesis.put_record(
-        StreamName = "OctankKinesisDataStream",
+        StreamName = "octank-kinesis-data-stream",
         Data = json.dumps(stream_event),
         PartitionKey = device_param
     )
