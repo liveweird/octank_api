@@ -1,6 +1,7 @@
 import json
 import boto3
 import logging
+import random
 
 from datetime import datetime
 from flask import Flask, request, jsonify
@@ -15,7 +16,8 @@ dbname = environ.get('OCTANK_AURORA_DBNAME')
 username = 'postgres'
 password = environ.get('OCTANK_AURORA_PASSWORD')
 connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
-app.config['SQLALCHEMY_DATABASE_URI'] = connection # 'postgresql://postgres:postgres@localhost/octank_aurora_db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = connection
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
@@ -62,19 +64,23 @@ class show(db.Model):
     origin = db.Column(db.String(32), nullable=False)
     genre = db.Column(db.Integer, nullable=False)
     pgrating = db.Column(db.Integer, nullable=False)
+    recommended = random.choice([True, False])
 
-    def __init__(self, show, origin, genre, pgrating):
+    def __init__(self, show, origin, genre, pgrating, recommended):
         self.show = show
         self.origin = origin
         self.genre = genre
         self.pgrating = pgrating
+        self.recommended = recommended
+
 
     def serialize(self):
         return {
             'show': self.show,
             'origin': self.origin,
             'genre': self.genre,
-            'pgrating': self.pgrating
+            'pgrating': self.pgrating,
+            'recommended': self.recommended
         }
 
 
