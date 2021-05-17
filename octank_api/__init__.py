@@ -3,7 +3,7 @@ import boto3
 import logging
 import random
 
-from datetime import datetime
+from enum import Enum, unique
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -23,6 +23,16 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
 kinesis = boto3.client("kinesis")
+
+# event types
+@unique
+class EventType(Enum):
+    LOGIN = 1
+    LOGIN_FAILED = 2
+    LOGOUT = 3
+    DETAILS = 4
+    TRAILER = 5
+    WATCHING = 6
 
 # health check
 @app.route('/', methods=['GET'])
@@ -51,11 +61,26 @@ class user(db.Model):
         }
 
 
+# fake the users table query (for local development w/o Postgres)
+def query_users():
+    return [
+        user('Ana-0-20-MZ', 0, 20, 'MZ'),
+        user('Bob-1-30-SW', 1, 30, 'SW'),
+        user('Chloe-0-40-MP', 0, 40, 'MP'),
+        user('Don-1-50-WP', 1, 50, 'WP'),
+        user('Eve-0-25-SW', 0, 25, 'SW'),
+        user('Flynn-1-35-MP', 1, 35, 'MP'),
+        user('Gina-0-45-MZ', 0, 45, 'MZ'),
+        user('Hugo-1-15-MZ', 1, 15, 'MZ')  
+    ]
+
+
 # read all users to impersonate
 @app.route('/api/users', methods=['GET'])
 def read_users():
     return jsonify({
-        'users': [user.serialize() for user in user.query.all()]
+        # 'users': [user.serialize() for user in user.query.all()]
+        'users': [user.serialize() for user in query_users()]
     }), 200
 
 
@@ -84,33 +109,90 @@ class show(db.Model):
         }
 
 
+# fake the shows table query (for local development w/o Postgres)
+def query_shows():
+    return [
+        show('Avatar-AU-1-1', 'Austria', 1, '1', False),
+        show('Breaking Bad-BR-2-2', 'Brasil', 2, '2', True),
+        show('Chernobyl-CH-3-3', 'Chile', 3, '3', True),
+        show('Dracula-DE-1-4', 'Denmark', 1, '4', False),
+        show('Exorcist-AU-1-5', 'Austria', 1, '5', False),
+        show('Family Guy-BR-2-1', 'Brasil', 2, '1', True),
+        show('Goonies-CH-2-1', 'Chile', 2, '1', False),
+        show('Home Alone-DE-1-2', 'Denmark', 1, '2', False)
+    ]
+
+
 # get all shows to watch
 @app.route('/api/shows', methods=['GET'])
 def read_shows():
     return jsonify({
-        'shows': [show.serialize() for show in show.query.all()]
+        # 'shows': [show.serialize() for show in show.query.all()]
+        'shows': [show.serialize() for show in query_shows()]
     }), 200
 
 
-@app.route('/api/watching', methods=['POST'])
-def watching_heartbeat():
-    user_param = request.args.get('user', type = str)
-    show_param = request.args.get('show', type = str)
-    device_param = request.args.get('device', type = str)
+@app.route('/api/events', methods=['POST'])
+def event_sink():
+    # obligatory
+    device_param = request.form.get('device', type = str)
+    user_param = request.form.get('user', type = str)
+    event_param = request.form.get('event', type = str)
+
+    # optional
+    show_param = request.form.get('show', default = '', type = str)
+    recommended_param = request.form.get('recommended', default=0, type=int)
+
+    # event builder
+    builder = {
+        EventType.LOGIN.value: lambda: {
+            'eventType': EventType.LOGIN.value,
+            'deviceid': device_param,
+            'userid': user_param
+        },
+        EventType.LOGIN_FAILED.value: lambda: {
+            'eventType': EventType.LOGIN_FAILED.value,
+            'deviceid': device_param,
+            'userid': user_param
+        },
+        EventType.LOGOUT.value: lambda: {
+            'eventType': EventType.LOGOUT.value,
+            'deviceid': device_param,
+            'userid': user_param
+        },
+        EventType.DETAILS.value: lambda: {
+            'eventType': EventType.DETAILS.value,
+            'deviceid': device_param,
+            'userid': user_param,
+            'showid': show_param,
+            'recommended': recommended_param
+        },
+        EventType.TRAILER.value: lambda: {
+            'eventType': EventType.TRAILER.value,
+            'deviceid': device_param,
+            'userid': user_param,
+            'showid': show_param,
+            'recommended': recommended_param
+        },
+        EventType.WATCHING.value: lambda: {
+            'eventType': EventType.WATCHING.value,
+            'deviceid': device_param,
+            'userid': user_param,
+            'showid': show_param,
+            'recommended': recommended_param
+        }
+    }
 
     # build event
-    stream_event = {
-        'userid': user_param,
-        'showid': show_param,
-        'deviceid': device_param
-        # 'tstamp': datetime.now().isoformat()
-    }
+    stream_event_builder = builder.get(int(event_param), lambda: {})
+    json_load = json.dumps(stream_event_builder())
+    print(json_load)
 
     # send event
     response = kinesis.put_record(
         StreamName = "octank-kinesis-data-stream",
-        Data = json.dumps(stream_event),
-        PartitionKey = device_param
+        Data = json_load,
+        PartitionKey = user_param
     )
 
     # analyze response
