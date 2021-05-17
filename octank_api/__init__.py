@@ -33,6 +33,7 @@ class EventType(Enum):
     DETAILS = 4
     TRAILER = 5
     WATCHING = 6
+    FINISHED = 7
 
 # health check
 @app.route('/', methods=['GET'])
@@ -176,6 +177,13 @@ def event_sink():
         },
         EventType.WATCHING.value: lambda: {
             'eventType': EventType.WATCHING.value,
+            'deviceid': device_param,
+            'userid': user_param,
+            'showid': show_param,
+            'recommended': recommended_param
+        },
+        EventType.FINISHED.value: lambda: {
+            'eventType': EventType.FINISHED.value,
             'deviceid': device_param,
             'userid': user_param,
             'showid': show_param,
