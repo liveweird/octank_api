@@ -24,6 +24,7 @@ db = SQLAlchemy(app)
 
 kinesis = boto3.client("kinesis")
 
+
 # event types
 @unique
 class EventType(Enum):
@@ -34,6 +35,7 @@ class EventType(Enum):
     TRAILER = 5
     WATCHING = 6
     FINISHED = 7
+
 
 # health check
 @app.route('/', methods=['GET'])
@@ -72,7 +74,7 @@ def query_users():
         user('Eve-0-25-SW', 0, 25, 'SW'),
         user('Flynn-1-35-MP', 1, 35, 'MP'),
         user('Gina-0-45-MZ', 0, 45, 'MZ'),
-        user('Hugo-1-15-MZ', 1, 15, 'MZ')  
+        user('Hugo-1-15-MZ', 1, 15, 'MZ')
     ]
 
 
@@ -98,7 +100,6 @@ class show(db.Model):
         self.genre = genre
         self.pgrating = pgrating
         self.recommended = recommended
-
 
     def serialize(self):
         return {
@@ -136,57 +137,57 @@ def read_shows():
 @app.route('/api/events', methods=['POST'])
 def event_sink():
     # obligatory
-    device_param = request.form.get('device', type = str)
-    user_param = request.form.get('user', type = str)
-    event_param = request.form.get('event', type = str)
+    device_param = request.form.get('device', type=str)
+    user_param = request.form.get('user', type=str)
+    event_param = request.form.get('event', type=str)
 
     # optional
-    show_param = request.form.get('show', default = '', type = str)
+    show_param = request.form.get('show', default='', type=str)
     recommended_param = request.form.get('recommended', default=0, type=int)
 
     # event builder
     builder = {
         EventType.LOGIN.value: lambda: {
             'eventType': EventType.LOGIN.value,
-            'deviceid': device_param,
-            'userid': user_param
+            'deviceId': device_param,
+            'userId': user_param
         },
         EventType.LOGIN_FAILED.value: lambda: {
             'eventType': EventType.LOGIN_FAILED.value,
-            'deviceid': device_param,
-            'userid': user_param
+            'deviceId': device_param,
+            'userId': user_param
         },
         EventType.LOGOUT.value: lambda: {
             'eventType': EventType.LOGOUT.value,
-            'deviceid': device_param,
-            'userid': user_param
+            'deviceId': device_param,
+            'userId': user_param
         },
         EventType.DETAILS.value: lambda: {
             'eventType': EventType.DETAILS.value,
-            'deviceid': device_param,
-            'userid': user_param,
-            'showid': show_param,
+            'deviceId': device_param,
+            'userId': user_param,
+            'showId': show_param,
             'recommended': recommended_param
         },
         EventType.TRAILER.value: lambda: {
             'eventType': EventType.TRAILER.value,
-            'deviceid': device_param,
-            'userid': user_param,
-            'showid': show_param,
+            'deviceId': device_param,
+            'userId': user_param,
+            'showId': show_param,
             'recommended': recommended_param
         },
         EventType.WATCHING.value: lambda: {
             'eventType': EventType.WATCHING.value,
-            'deviceid': device_param,
-            'userid': user_param,
-            'showid': show_param,
+            'deviceId': device_param,
+            'userId': user_param,
+            'showId': show_param,
             'recommended': recommended_param
         },
         EventType.FINISHED.value: lambda: {
             'eventType': EventType.FINISHED.value,
-            'deviceid': device_param,
-            'userid': user_param,
-            'showid': show_param,
+            'deviceId': device_param,
+            'userId': user_param,
+            'showId': show_param,
             'recommended': recommended_param
         }
     }
@@ -198,9 +199,9 @@ def event_sink():
 
     # send event
     response = kinesis.put_record(
-        StreamName = "octank-kinesis-data-stream",
-        Data = json_load,
-        PartitionKey = user_param
+        StreamName="octank-kinesis-data-stream",
+        Data=json_load,
+        PartitionKey=user_param
     )
 
     # analyze response
@@ -210,6 +211,6 @@ def event_sink():
         'seq': ordinal
     }), 201
 
-  
+
 if __name__ == '__main__':
-    app.run(debug = True, host='0.0.0.0', port = 80)
+    app.run(debug=True, host='0.0.0.0', port=80)
