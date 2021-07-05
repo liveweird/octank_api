@@ -13,8 +13,8 @@ endpoint = environ.get('OCTANK_AURORA_ENDPOINT')
 dbname = environ.get('OCTANK_AURORA_DBNAME')
 username = 'postgres'
 password = environ.get('OCTANK_AURORA_PASSWORD')
-# connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
-connection = 'postgresql://postgres:postgres@localhost/octank_aurora_db'
+connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
+# connection = 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 config.set_main_option('sqlalchemy.url', connection)
 
 # Interpret the config file for Python logging.

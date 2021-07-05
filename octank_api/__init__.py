@@ -16,8 +16,8 @@ dbname = environ.get('OCTANK_AURORA_DBNAME')
 username = 'postgres'
 password = environ.get('OCTANK_AURORA_PASSWORD')
 connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
-# app.config['SQLALCHEMY_DATABASE_URI'] = connection
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/octank_aurora_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = connection
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
@@ -82,8 +82,8 @@ def query_users():
 @app.route('/api/users', methods=['GET'])
 def read_users():
     return jsonify({
-        # 'users': [user.serialize() for user in user.query.all()]
-        'users': [user.serialize() for user in query_users()]
+        'users': [user.serialize() for user in user.query.all()]
+        # 'users': [user.serialize() for user in query_users()]
     }), 200
 
 
@@ -129,8 +129,8 @@ def query_shows():
 @app.route('/api/shows', methods=['GET'])
 def read_shows():
     return jsonify({
-        # 'shows': [show.serialize() for show in show.query.all()]
-        'shows': [show.serialize() for show in query_shows()]
+        'shows': [show.serialize() for show in show.query.all()]
+        # 'shows': [show.serialize() for show in query_shows()]
     }), 200
 
 
