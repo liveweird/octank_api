@@ -98,7 +98,6 @@ class show(db.Model):
         self.origin = origin
         self.genre = genre
         self.pgrating = pgrating
-        self.recommended = random.choice([True, False])
 
     def serialize(self):
         return {
@@ -106,7 +105,7 @@ class show(db.Model):
             'origin': self.origin,
             'genre': self.genre,
             'pgrating': self.pgrating,
-            'recommended': self.recommended
+            'recommended': random.choice([True, False])
         }
 
 
