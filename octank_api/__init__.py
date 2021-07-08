@@ -92,14 +92,13 @@ class show(db.Model):
     origin = db.Column(db.String(32), nullable=False)
     genre = db.Column(db.Integer, nullable=False)
     pgrating = db.Column(db.Integer, nullable=False)
-    recommended = random.choice([True, False])
 
-    def __init__(self, show, origin, genre, pgrating, recommended):
+    def __init__(self, show, origin, genre, pgrating):
         self.show = show
         self.origin = origin
         self.genre = genre
         self.pgrating = pgrating
-        self.recommended = recommended
+        self.recommended = random.choice([True, False])
 
     def serialize(self):
         return {
