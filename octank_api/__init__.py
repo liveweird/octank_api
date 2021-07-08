@@ -143,51 +143,59 @@ def event_sink():
     # optional
     show_param = request.form.get('show', default='', type=str)
     recommended_param = request.form.get('recommended', default=0, type=int)
+    tstamp = datetime.now().isoformat()
 
     # event builder
     builder = {
         EventType.LOGIN.value: lambda: {
             'eventType': EventType.LOGIN.value,
             'deviceId': device_param,
-            'userId': user_param
+            'userId': user_param,
+            'tstamp': tstamp
         },
         EventType.LOGIN_FAILED.value: lambda: {
             'eventType': EventType.LOGIN_FAILED.value,
             'deviceId': device_param,
-            'userId': user_param
+            'userId': user_param,
+            'tstamp': tstamp
         },
         EventType.LOGOUT.value: lambda: {
             'eventType': EventType.LOGOUT.value,
             'deviceId': device_param,
-            'userId': user_param
+            'userId': user_param,
+            'tstamp': tstamp
         },
         EventType.DETAILS.value: lambda: {
             'eventType': EventType.DETAILS.value,
             'deviceId': device_param,
             'userId': user_param,
             'showId': show_param,
-            'recommended': recommended_param
+            'recommended': recommended_param,
+            'tstamp': tstamp
         },
         EventType.TRAILER.value: lambda: {
             'eventType': EventType.TRAILER.value,
             'deviceId': device_param,
             'userId': user_param,
             'showId': show_param,
-            'recommended': recommended_param
+            'recommended': recommended_param,
+            'tstamp': tstamp
         },
         EventType.WATCHING.value: lambda: {
             'eventType': EventType.WATCHING.value,
             'deviceId': device_param,
             'userId': user_param,
             'showId': show_param,
-            'recommended': recommended_param
+            'recommended': recommended_param,
+            'tstamp': tstamp
         },
         EventType.FINISHED.value: lambda: {
             'eventType': EventType.FINISHED.value,
             'deviceId': device_param,
             'userId': user_param,
             'showId': show_param,
-            'recommended': recommended_param
+            'recommended': recommended_param,
+            'tstamp': tstamp
         }
     }
 
