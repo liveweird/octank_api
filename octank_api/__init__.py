@@ -205,14 +205,15 @@ def event_sink():
     print(json_load)
 
     # send event
-    response = kinesis.put_record(
-        StreamName="octank-kinesis-data-stream",
-        Data=json_load,
-        PartitionKey=user_param
-    )
+    # response = kinesis.put_record(
+    #     StreamName="octank-kinesis-data-stream",
+    #     Data=json_load,
+    #     PartitionKey=user_param
+    # )
 
     # analyze response
-    ordinal = response["SequenceNumber"]
+    # ordinal = response["SequenceNumber"]
+    ordinal = 123
 
     return jsonify({
         'seq': ordinal
