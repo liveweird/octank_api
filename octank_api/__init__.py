@@ -12,21 +12,21 @@ from os import environ
 
 from opentelemetry import trace
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
-from opentelemetry.instrumentation.requests import RequestInstrumentor
-from opentelemetry.sdk.trace impor TraceProvider
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import (
     BatchSpanProcessor,
     ConsoleSpanExporter
 )
 
-trace.set_trace_provider(TraceProvider())
-trace.get_trace_provider().add_span_processor(
+trace.set_tracer_provider(TracerProvider())
+trace.get_tracer_provider().add_span_processor(
     BatchSpanProcessor(ConsoleSpanExporter())
 )
 
 app = Flask(__name__, instance_relative_config=True)
 FlaskInstrumentor().instrument_app(app)
-RequestInstrumentor().instrument()
+RequestsInstrumentor().instrument()
 tracer = trace.get_tracer(__name__)
 
 endpoint = environ.get('OCTANK_AURORA_ENDPOINT')
