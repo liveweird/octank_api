@@ -14,6 +14,10 @@ lazy-object-proxy==1.5.2
 Mako==1.1.4
 MarkupSafe==1.1.1
 mccabe==0.6.1
+opentelemetry-api==1.11.1
+opentelemetry-sdk==1.11.1
+opentelemetry-instrumentation-flask==0.30b1
+opentelemetry-instrumentation-requests==0.30b1
 psycopg2-binary==2.8.6
 pylint==2.7.2
 python-dateutil==2.8.1
