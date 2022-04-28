@@ -10,21 +10,40 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
-from opentelemetry import trace
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import (
-    BatchSpanProcessor,
-    ConsoleSpanExporter
+from opentelemetry import propagate, trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+    OTLPSpanExporter
 )
 
-trace.set_tracer_provider(TracerProvider())
-trace.get_tracer_provider().add_span_processor(
-    BatchSpanProcessor(ConsoleSpanExporter())
+from opentelemetry.instrumentation.botocore import BotocoreInstrumentor
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+from opentelemetry.propagators.aws import AwsXRayPropagator
+from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
+
+propagate.set_global_textmap(AwsXRayPropagator())
+
+otlp_exporter = OTLPSpanExporter()
+span_processor = BatchSpanProcessor(otlp_exporter)
+trace.set_tracer_provider(
+    TracerProvider(
+        active_span_processor=span_processor,
+        id_generator=AwsXRayIdGenerator(),
+        # resource=get_aggregated_resources(
+        #     [
+        #         AwsEc2ResourceDetector(),
+        #     ]
+        # ),
+    )
 )
 
 app = Flask(__name__, instance_relative_config=True)
+
+BotocoreInstrumentor().instrument()
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 tracer = trace.get_tracer(__name__)
@@ -58,8 +77,8 @@ class EventType(Enum):
 # health check
 @app.route('/', methods=['GET'])
 def health_check():
-    with tracer.start_as_current_span("health-check"):
-        return jsonify({}), 200
+    # with tracer.start_as_current_span("health-check"):
+    return jsonify({}), 200
 
 
 class user(db.Model):
