@@ -27,7 +27,7 @@ from opentelemetry.sdk.extension.aws.trace import AwsXRayIdGenerator
 
 propagate.set_global_textmap(AwsXRayPropagator())
 
-otlp_exporter = OTLPSpanExporter()
+otlp_exporter = OTLPSpanExporter(endpoint="http://localhost:4317")
 span_processor = BatchSpanProcessor(otlp_exporter)
 trace.set_tracer_provider(
     TracerProvider(
