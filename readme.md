@@ -50,3 +50,14 @@ aws ecr create-repository \
     --region eu-central-1
 docker push $ECR_REGISTRY/octank_task:latest
 docker push $ECR_REGISTRY/octank_task:v?
+
+docker build -t octank_otel -f Dockerfile.otel .
+docker tag octank_otel:latest $ECR_REGISTRY/octank_otel:latest
+docker tag octank_otel:latest $ECR_REGISTRY/octank_otel:v?
+
+aws ecr create-repository \
+    --repository-name octank_otel \
+    --image-scanning-configuration scanOnPush=false \
+    --region eu-central-1
+docker push $ECR_REGISTRY/octank_otel:latest
+docker push $ECR_REGISTRY/octank_otel:v?
