@@ -123,6 +123,8 @@ def query_users():
 @app.route('/api/users', methods=['GET'])
 def read_users():
     with tracer.start_as_current_span("read-users"):
+        span = trace.get_current_span()
+        span.add_event("All the users!")
         return jsonify({
             'users': [user.serialize() for user in user.query.all()]
             # 'users': [user.serialize() for user in query_users()]
@@ -172,6 +174,8 @@ def query_shows():
 @app.route('/api/shows', methods=['GET'])
 def read_shows():
     with tracer.start_as_current_span("read-shows"):
+        span = trace.get_current_span()
+        span.add_event("All the shows!")
         return jsonify({
             'shows': [show.serialize() for show in show.query.all()]
             # 'shows': [show.serialize() for show in query_shows()]
@@ -248,7 +252,13 @@ def event_sink():
 
         # build event
         stream_event_builder = builder.get(int(event_param), lambda: {})
-        json_load = json.dumps(stream_event_builder())
+        event = stream_event_builder()
+
+        if event['eventType'] == EventType.LOGIN_FAILED.value:
+            current_span = trace.get_current_span()
+            current_span.set_status(StatusCode.ERROR)
+
+        json_load = json.dumps(event)
         print(json_load)
 
         # send event
