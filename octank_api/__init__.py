@@ -60,7 +60,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
 kinesis = boto3.client("kinesis")
-
+lambda_ = boto3.client("lambda")
 
 # event types
 @unique
@@ -268,12 +268,19 @@ def event_sink():
         #     PartitionKey=user_param
         # )
 
+        # call lambda
+        response = lambda_.invoke(
+            FunctionName='octank-lambda-handler',
+            InvocationType='RequestResponse',
+            LogType='Tail',
+            Payload=json_load
+        )
+
         # analyze response
-        # ordinal = response["SequenceNumber"]
-        ordinal = 123
+        code = response["StatusCode"]
 
         return jsonify({
-            'seq': ordinal
+            'code': code
         }), 201
 
 
