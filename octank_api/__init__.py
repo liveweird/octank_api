@@ -56,6 +56,8 @@ connection = f'postgresql://{username}:{password}@{endpoint}/{dbname}'
 app.config['SQLALCHEMY_DATABASE_URI'] = connection
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/octank_aurora_db'
 
+function_name = environ.get('OCTANK_FUNCTION_NAME')
+
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
 
@@ -270,7 +272,7 @@ def event_sink():
 
         # call lambda
         response = lambda_.invoke(
-            FunctionName='octank-lambda-handler',
+            FunctionName=function_name,
             InvocationType='RequestResponse',
             LogType='Tail',
             Payload=json_load
