@@ -18,6 +18,7 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
 from opentelemetry.instrumentation.botocore import BotocoreInstrumentor
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -60,6 +61,10 @@ function_name = environ.get('OCTANK_FUNCTION_NAME')
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 db = SQLAlchemy(app)
+
+SQLAlchemyInstrumentor().instrument(
+    engine=db.engine
+)
 
 kinesis = boto3.client("kinesis")
 lambda_ = boto3.client("lambda")
