@@ -10,7 +10,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
-from opentelemetry import propagate, trace
+from opentelemetry import propagate, trace, baggage
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
     OTLPSpanExporter
 )
@@ -203,6 +203,9 @@ def event_sink():
         recommended_param = request.form.get('recommended', default=0, type=int)
         tstamp = datetime.now().isoformat()
 
+        # baggage
+        baggage.set_baggage("device", device_param)
+
         # event builder
         builder = {
             EventType.LOGIN.value: lambda: {
@@ -263,7 +266,7 @@ def event_sink():
 
         if event['eventType'] == EventType.LOGIN_FAILED.value:
             current_span = trace.get_current_span()
-            current_span.set_status(StatusCode.ERROR)
+            current_span.set_status(trace.status.StatusCode.ERROR)
 
         json_load = json.dumps(event)
         print(json_load)
